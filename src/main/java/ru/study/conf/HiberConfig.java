@@ -20,9 +20,7 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan("ru")
-@PropertySource("classpath:persistance.properties")
 public class HiberConfig {
-
 
     @Bean
     public DataSource dataSource() {
@@ -55,16 +53,9 @@ public class HiberConfig {
     }
 
     @Bean
-    public PlatformTransactionManager hibernateTransactionManager() {
-        HibernateTransactionManager transactionManager
-                = new HibernateTransactionManager();
-        transactionManager.setSessionFactory(sessionFactory().getObject());
+    public PlatformTransactionManager hibernateTransactionManager(SessionFactory sessionFactory) {
+        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+        transactionManager.setSessionFactory(sessionFactory);
         return transactionManager;
     }
-
-
-
-
-
-
 }

@@ -13,6 +13,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 @ComponentScan( "ru.study")
 @Import(HiberConfig.class)
 public class AppConfig {
+
     @Bean
     public UrlBasedViewResolver setupViewResolver() {
 
