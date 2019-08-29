@@ -12,14 +12,14 @@
     <form:label path="login">Login:</form:label>
     <form:input path="login"/>
 
+    <form:label path="email">email:</form:label>
+    <form:input path="email"/>
+
     <form:label path="password">Password:</form:label>
     <form:password path="password"/>
 
-    <form:label path="email">Password:</form:label>
-    <form:input path="email"/>
 
     <input type="submit" class="btnLogin" value="Save" tabindex="4">
-
     <a href="/admin" class=""> list </a>
     <a href="/index" class=""> login</a>
 </form:form>

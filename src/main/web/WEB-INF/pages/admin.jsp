@@ -29,7 +29,7 @@
             <td>${user.role}</td>
             <td>${user.rating}</td>
             <td>
-                <a href="/edit?id=<c:out value='${user.id}'/>">Edit</a>
+                <a href="/admin/edit?id=<c:out value='${user.id}'/>">Edit</a>
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 <a href="/admin/delete?id=<c:out value='${user.id}'/>">Delete</a>
             </td>

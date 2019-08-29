@@ -4,6 +4,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.study.dao.UserDAO;
 import ru.study.model.User;
 
@@ -29,7 +31,7 @@ public class UserDAOHibernateImpl implements UserDAO {
 
     @Override
     public void addUser(User user) {
-        currentSession().persist(user);
+        currentSession().save(user);
     }
 
     @Override
@@ -50,13 +52,29 @@ public class UserDAOHibernateImpl implements UserDAO {
 
     @Override
     public void removeUserById(Long id) {
-        Query query = currentSession().createQuery("delete from User where id =:id");
-        query.setParameter("id", id).executeUpdate();
+        Query query = currentSession().createQuery("delete from User where id = :ID");
+        query.setParameter("ID", id);
+        query.executeUpdate();
+
     }
 
     @Override
     public void updateUser(User user) {
-        currentSession().merge(user);
+        String hql = "UPDATE User" +
+                " set email =: email, " +
+                "  login =: login, " +
+                "  password =: password, " +
+                "  rating =: rating, " +
+                "  role =: role " +
+                "WHERE id =:id";
+        Query query = currentSession().createQuery(hql);
+        query.setParameter("email", user.getEmail());
+        query.setParameter("login", user.getLogin());
+        query.setParameter("password", user.getPassword());
+        query.setParameter("rating", user.getRating());
+        query.setParameter("role", user.getRole());
+        query.setParameter("id", user.getId());
+        query.executeUpdate();
 
     }
 

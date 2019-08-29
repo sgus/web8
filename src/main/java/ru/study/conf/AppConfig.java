@@ -10,7 +10,7 @@ import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 @Configuration
-@ComponentScan(basePackages = "ru.study")
+@ComponentScan( "ru.study")
 @Import(HiberConfig.class)
 public class AppConfig {
     @Bean

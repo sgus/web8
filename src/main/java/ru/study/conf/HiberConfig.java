@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
@@ -18,32 +19,30 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan("ru.study.conf")
+@ComponentScan("ru")
 @PropertySource("classpath:persistance.properties")
 public class HiberConfig {
-    @Autowired
-    private Environment environment;
+
 
     @Bean
-    public DataSource dataSource(@Value("${hibernate.driver}") String driver,
-                                 @Value("${hibernate.url}") String url,
-                                 @Value("${hibernate.username}") String user,
-                                 @Value("${hibernate.password}") String password) {
+    public DataSource dataSource() {
+
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(driver);
-        dataSource.setUrl(url);
-        dataSource.setUsername(user);
-        dataSource.setPassword(password);
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/web6_db?&useTimezone=true&serverTimezone=UTC&useSSL=false");
+        dataSource.setUsername("root");
+        dataSource.setPassword("1234");
 
         return dataSource;
     }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
+    public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource);
-        sessionFactory.setPackagesToScan("my.study.model");
+        sessionFactory.setDataSource(dataSource());
+        sessionFactory.setPackagesToScan("ru.study.model");
         sessionFactory.setHibernateProperties(hibernateProperties());
+
         return sessionFactory;
     }
 
@@ -54,5 +53,18 @@ public class HiberConfig {
         properties.put("hibernate.hbm2ddl.auto", "update");
         return properties;
     }
+
+    @Bean
+    public PlatformTransactionManager hibernateTransactionManager() {
+        HibernateTransactionManager transactionManager
+                = new HibernateTransactionManager();
+        transactionManager.setSessionFactory(sessionFactory().getObject());
+        return transactionManager;
+    }
+
+
+
+
+
 
 }

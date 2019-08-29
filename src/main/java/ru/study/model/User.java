@@ -6,7 +6,7 @@ import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
 
 @Entity(name = "User")
-@Table(name = "users",schema = "web6_db")
+@Table(name = "users", schema = "web6_db")
 @Data
 public class User {
     @Id
@@ -19,7 +19,7 @@ public class User {
     private String email;
     @Column(name = "password")
     private String password;
-    @Column(name = "role" )
+    @Column(name = "role")
     @ColumnDefault("user")
     private String role;
     @Column(name = "rating")
