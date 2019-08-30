@@ -21,6 +21,7 @@ public class TController {
 
     @RequestMapping("/")
     public String viewer() {
+
         return "index";
     }
 
@@ -31,16 +32,19 @@ public class TController {
         return "admin";
     }
 
-    @RequestMapping("/admin/delete")
+    @RequestMapping(value = "/admin/delete", method = RequestMethod.GET)
     public String delete(@RequestParam(name = "id", required = false) Long id) {
+        System.out.println(id);
         userService.deleteById(id);
-        return "admin";
+        return "redirect:/admin";
     }
 
-    @RequestMapping("/admin/edit")
-    public String editButton(@RequestParam(name = "id", required = false) Long id, Model model) {
+    @RequestMapping(value = "/admin/edit", method = RequestMethod.GET)
+    public String editButton(@RequestParam(name = "id") Long id, Model model) {
         System.out.println(id);
-        model.addAttribute("user", userService.getUserById(id));
+        User userById = userService.getUserById(id);
+        System.out.println(userById.getLogin());
+        model.addAttribute("user", userById);
         return "edit";
     }
 
@@ -66,7 +70,8 @@ public class TController {
                        @RequestParam String role
     ) {
         userService.updateUser(new User(id, login, email, password, role, rating));
-        return "admin";
+        return "redirect:/admin";
     }
+
 
 }

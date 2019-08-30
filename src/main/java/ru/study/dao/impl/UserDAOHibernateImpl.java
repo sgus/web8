@@ -4,8 +4,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ru.study.dao.UserDAO;
 import ru.study.model.User;
 
@@ -19,7 +17,7 @@ public class UserDAOHibernateImpl implements UserDAO {
     private SessionFactory sessionFactory;
 
     private Session currentSession() {
-        return sessionFactory.openSession();
+        return sessionFactory.getCurrentSession();
     }
 
     @Override
@@ -42,7 +40,7 @@ public class UserDAOHibernateImpl implements UserDAO {
 
     @Override
     public User getUserById(long id) {
-        return currentSession().getReference(User.class, id);
+        return currentSession().get(User.class, id);
     }
 
     @Override

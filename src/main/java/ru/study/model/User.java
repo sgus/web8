@@ -61,12 +61,12 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
-                ", login='" + login + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", role='" + role + '\'' +
-                ", rating=" + rating +
+                "id=" + this.id +
+                ", login='" + this.login + '\'' +
+                ", email='" + this.email + '\'' +
+                ", password='" + this.password + '\'' +
+                ", role='" + this.role + '\'' +
+                ", rating=" + this.rating +
                 '}';
     }
 }
