@@ -11,7 +11,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 @Configuration
 @ComponentScan( "ru.study")
-@Import(HiberConfig.class)
+@Import(JPAConfig.class)
 public class AppConfig {
 
     @Bean

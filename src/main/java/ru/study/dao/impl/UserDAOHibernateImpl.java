@@ -7,50 +7,50 @@ import org.springframework.stereotype.Repository;
 import ru.study.dao.UserDAO;
 import ru.study.model.User;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
 
 @Repository("userDAO")
 public class UserDAOHibernateImpl implements UserDAO {
 
-    @Autowired
-    private SessionFactory sessionFactory;
+    @PersistenceContext
+   private EntityManager entityManager;
 
-    private Session currentSession() {
-        return sessionFactory.getCurrentSession();
-    }
 
     @Override
     public List<User> getAllUsers() {
-        List query = currentSession().createQuery("FROM User").getResultList();
+        List query = entityManager.createQuery("SELECT u FROM User u",User.class).getResultList();
         System.out.println(query);
         return query;
     }
 
     @Override
     public void addUser(User user) {
-        currentSession().save(user);
+        entityManager.merge(user);
     }
 
     @Override
     public void removeUserByLogin(String login) {
-        Query query = currentSession().createQuery("delete from User where login=:login");
+        Query query = entityManager.createQuery("delete from User where login=:login");
         query.setParameter("login", login).executeUpdate();
     }
 
     @Override
     public User getUserById(long id) {
-        return currentSession().get(User.class, id);
+
+        return entityManager.find(User.class, id);
     }
 
     @Override
     public User getUserByLogin(String login) {
-        return currentSession().find(User.class, login);
+        return entityManager.find(User.class, login);
     }
 
     @Override
     public void removeUserById(Long id) {
-        Query query = currentSession().createQuery("delete from User where id = :ID");
+        Query query = entityManager.createQuery("delete from User where id = :ID");
         query.setParameter("ID", id);
         query.executeUpdate();
 
@@ -65,7 +65,7 @@ public class UserDAOHibernateImpl implements UserDAO {
                 "  rating =: rating, " +
                 "  role =: role " +
                 "WHERE id =:id";
-        Query query = currentSession().createQuery(hql);
+        Query query = entityManager.createQuery(hql);
         query.setParameter("email", user.getEmail());
         query.setParameter("login", user.getLogin());
         query.setParameter("password", user.getPassword());

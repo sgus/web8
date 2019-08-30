@@ -1130,12 +1130,12 @@
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="285" parent="283" name="email">
+    <column id="285" parent="283" name="login">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="286" parent="283" name="login">
+    <column id="286" parent="283" name="email">
       <Position>3</Position>
       <DataType>varchar(255)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
@@ -1145,14 +1145,16 @@
       <DataType>varchar(255)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="288" parent="283" name="rating">
+    <column id="288" parent="283" name="role">
       <Position>5</Position>
-      <DataType>bigint(20)|0s</DataType>
+      <DataType>varchar(255)|0s</DataType>
+      <DefaultExpression>&apos;user&apos;</DefaultExpression>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="289" parent="283" name="role">
+    <column id="289" parent="283" name="rating">
       <Position>6</Position>
-      <DataType>varchar(255)|0s</DataType>
+      <DataType>bigint(20)|0s</DataType>
+      <DefaultExpression>0</DefaultExpression>
       <ColumnKind>normal</ColumnKind>
     </column>
     <key id="290" parent="283" name="PRIMARY">
