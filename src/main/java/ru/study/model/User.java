@@ -19,9 +19,9 @@ public class User {
     private String email;
     @Column(name = "password")
     private String password;
-    @Column(name = "role")
-    @ColumnDefault("user")
-    private String role;
+    @ManyToOne
+    @JoinColumn(name="role_id")
+    private Role role;
     @Column(name = "rating")
     @ColumnDefault("0")
     private Long rating;
@@ -29,7 +29,7 @@ public class User {
     public User() {
     }
 
-    public User(long id, String login, String email, String password, String role, Long rating) {
+    public User(long id, String login, String email, String password, Role role, Long rating) {
         this.id = id;
         this.login = login;
         this.email = email;
@@ -44,7 +44,7 @@ public class User {
         this.password = password;
     }
 
-    public User(String login, String email, String password, String role, Long rating) {
+    public User(String login, String email, String password, Role role, Long rating) {
         this.login = login;
         this.email = email;
         this.password = password;
@@ -65,7 +65,7 @@ public class User {
                 ", login='" + this.login + '\'' +
                 ", email='" + this.email + '\'' +
                 ", password='" + this.password + '\'' +
-                ", role='" + this.role + '\'' +
+                ", role='" + this.role.getName() + '\'' +
                 ", rating=" + this.rating +
                 '}';
     }
