@@ -37,7 +37,7 @@ public class JPAConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory  // обертка над EntityManagerFactory. К ней будет спринг обращатся когда ему нужен будет EntityManager.
     (DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {  // при создании бина в этод метод будут переданы бины с той же конфигурации.
         Properties jpaProp = new Properties();
-        jpaProp.put("hibernate.hbm2ddl.auto", "update");
+        jpaProp.put("hibernate.hbm2ddl.auto", "create");
 
         LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactory.setDataSource(dataSource);

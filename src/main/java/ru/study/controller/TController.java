@@ -69,7 +69,8 @@ public class TController {
                        @RequestParam(value = "rating") long rating,
                        @RequestParam String role
     ) {
-        userService.updateUser(new User(id, login, email, password, role, rating));
+
+//        userService.updateUser(new User(id, login, email, password, id_role, rating));
         return "redirect:/admin";
     }
 

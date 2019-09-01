@@ -70,7 +70,7 @@ public class UserDAOHibernateImpl implements UserDAO {
         query.setParameter("login", user.getLogin());
         query.setParameter("password", user.getPassword());
         query.setParameter("rating", user.getRating());
-        query.setParameter("role", user.getRole());
+        query.setParameter("role", user.getId());
         query.setParameter("id", user.getId());
         query.executeUpdate();
 
