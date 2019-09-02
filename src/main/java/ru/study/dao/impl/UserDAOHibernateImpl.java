@@ -53,7 +53,10 @@ public class UserDAOHibernateImpl implements UserDAO {
         Query query = entityManager.createQuery("delete from User where id = :ID");
         query.setParameter("ID", id);
         query.executeUpdate();
-
+    }
+    @Override
+    public User findUserByUsername(String username) {
+        return entityManager.find(User.class, username);
     }
 
     @Override
@@ -65,6 +68,7 @@ public class UserDAOHibernateImpl implements UserDAO {
                 "  rating =: rating, " +
                 "  role =: role " +
                 "WHERE id =:id";
+
         Query query = entityManager.createQuery(hql);
         query.setParameter("email", user.getEmail());
         query.setParameter("login", user.getLogin());

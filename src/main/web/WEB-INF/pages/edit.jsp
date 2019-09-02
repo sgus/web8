@@ -7,7 +7,8 @@
     <title>edit</title>
 </head>
 <body>
-<form method="post" action="/edit">
+<form:form method="post" action="/edit" modelAttribute="user" >
+
     <div style="color: teal; font-size: 20px">Edit user</div>
     <a href="/reg">New User</a>
     <table>
@@ -37,7 +38,7 @@
         </tr>
         <tr>
             <td>Role :</td>
-            <td><input type="text" name="role" value="<c:out value="${user.role}"/>"/>
+            <td><input type="text" name="role" value="<c:out value="${user.role.name}"/>"/>
             </td>
         </tr>
         <tr>
@@ -55,7 +56,7 @@
             </td>
         </tr>
     </table>
-</form>
+</form:form>
 
 
 

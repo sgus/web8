@@ -25,7 +25,7 @@
             <td>${user.login}</td>
             <td>${user.email}</td>
             <td>${user.password}</td>
-            <td>${user.role}</td>
+            <td>${user.role.name}</td>
             <td>${user.rating}</td>
             <td>
                 <a href="/admin/edit?id=<c:out value='${user.id}'/>">Edit</a>

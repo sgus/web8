@@ -23,5 +23,7 @@ public interface UserDAO {
 
     boolean validateUser(User user);
 
+    User findUserByUsername(String username);
+
 
 }

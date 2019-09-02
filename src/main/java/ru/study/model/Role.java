@@ -3,7 +3,6 @@ package ru.study.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,4 +17,11 @@ public class Role {
     private String name;
     @OneToMany(mappedBy="role", cascade=CascadeType.ALL)
     private List<User> contacts ;
+
+    public Role(String name) {
+        this.name = name;
+    }
+
+    public Role() {
+    }
 }
