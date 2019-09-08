@@ -1,0 +1,403 @@
+Index: src/main/resources/persistance.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1251
+===================================================================
+--- src/main/resources/persistance.properties	(revision de83ebb38eadeeff227ab44b4c02294ac38c518c)
++++ src/main/resources/persistance.properties	(date 1567088143347)
+@@ -1,6 +1,3 @@
+-
+-hibernate.driver = com.mysql.cj.jdbc.Driver
+-hibernate.url = jdbc:mysql://localhost:3306/web6_db?&useTimezone=true&serverTimezone=UTC&useSSL=false
+ hibernate.username = root
+ hibernate.password = 1234
+ 
+Index: src/main/java/ru/study/service/impl/UserServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/ru/study/service/impl/UserServiceImpl.java	(revision de83ebb38eadeeff227ab44b4c02294ac38c518c)
++++ src/main/java/ru/study/service/impl/UserServiceImpl.java	(date 1567088577582)
+@@ -3,6 +3,8 @@
+ 
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Service;
++import org.springframework.transaction.annotation.Propagation;
++import org.springframework.transaction.annotation.Transactional;
+ import ru.study.dao.UserDAO;
+ import ru.study.model.User;
+ import ru.study.service.UserService;
+@@ -10,6 +12,12 @@
+ import java.util.List;
+ 
+ @Service
++@Transactional
++        (
++                propagation = Propagation.REQUIRED,
++                readOnly = false,
++                rollbackFor = Throwable.class
++        )
+ public class UserServiceImpl implements UserService {
+ 
+     private final UserDAO dao;
+Index: pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pom.xml	(revision de83ebb38eadeeff227ab44b4c02294ac38c518c)
++++ pom.xml	(date 1567087437019)
+@@ -27,6 +27,11 @@
+         </dependency>
+         <dependency>
+             <groupId>org.springframework</groupId>
++            <artifactId>spring-web</artifactId>
++            <version>5.1.7.RELEASE</version>
++        </dependency>
++        <dependency>
++            <groupId>org.springframework</groupId>
+             <artifactId>spring-orm</artifactId>
+             <version>5.1.7.RELEASE</version>
+         </dependency>
+@@ -34,11 +39,6 @@
+             <groupId>org.projectlombok</groupId>
+             <artifactId>lombok</artifactId>
+             <version>1.18.8</version>
+-        </dependency>
+-        <dependency>
+-            <groupId>javax.servlet</groupId>
+-            <artifactId>javax.servlet-api</artifactId>
+-            <version>3.1.0</version>
+         </dependency>
+         <dependency>
+             <groupId>javax.servlet</groupId>
+Index: src/main/java/ru/study/conf/HiberConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/ru/study/conf/HiberConfig.java	(revision de83ebb38eadeeff227ab44b4c02294ac38c518c)
++++ src/main/java/ru/study/conf/HiberConfig.java	(date 1567088425800)
+@@ -11,6 +11,7 @@
+ import org.springframework.jdbc.datasource.DriverManagerDataSource;
+ import org.springframework.orm.hibernate5.HibernateTransactionManager;
+ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
++import org.springframework.transaction.PlatformTransactionManager;
+ import org.springframework.transaction.annotation.EnableTransactionManagement;
+ 
+ import javax.sql.DataSource;
+@@ -18,32 +19,30 @@
+ 
+ @Configuration
+ @EnableTransactionManagement
+-@ComponentScan("ru.study.conf")
++@ComponentScan("ru")
+ @PropertySource("classpath:persistance.properties")
+ public class HiberConfig {
+-    @Autowired
+-    private Environment environment;
++
+ 
+     @Bean
+-    public DataSource dataSource(@Value("${hibernate.driver}") String driver,
+-                                 @Value("${hibernate.url}") String url,
+-                                 @Value("${hibernate.username}") String user,
+-                                 @Value("${hibernate.password}") String password) {
++    public DataSource dataSource() {
++
+         DriverManagerDataSource dataSource = new DriverManagerDataSource();
+-        dataSource.setDriverClassName(driver);
+-        dataSource.setUrl(url);
+-        dataSource.setUsername(user);
+-        dataSource.setPassword(password);
++        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
++        dataSource.setUrl("jdbc:mysql://localhost:3306/web6_db?&useTimezone=true&serverTimezone=UTC&useSSL=false");
++        dataSource.setUsername("root");
++        dataSource.setPassword("1234");
+ 
+         return dataSource;
+     }
+ 
+     @Bean
+-    public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
++    public LocalSessionFactoryBean sessionFactory() {
+         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+-        sessionFactory.setDataSource(dataSource);
+-        sessionFactory.setPackagesToScan("my.study.model");
++        sessionFactory.setDataSource(dataSource());
++        sessionFactory.setPackagesToScan("ru.study.model");
+         sessionFactory.setHibernateProperties(hibernateProperties());
++
+         return sessionFactory;
+     }
+ 
+@@ -55,4 +54,17 @@
+         return properties;
+     }
+ 
++    @Bean
++    public PlatformTransactionManager hibernateTransactionManager() {
++        HibernateTransactionManager transactionManager
++                = new HibernateTransactionManager();
++        transactionManager.setSessionFactory(sessionFactory().getObject());
++        return transactionManager;
++    }
++
++
++
++
++
++
+ }
+Index: src/main/java/ru/study/dao/impl/UserDAOHibernateImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/ru/study/dao/impl/UserDAOHibernateImpl.java	(revision de83ebb38eadeeff227ab44b4c02294ac38c518c)
++++ src/main/java/ru/study/dao/impl/UserDAOHibernateImpl.java	(date 1567088577539)
+@@ -4,6 +4,8 @@
+ import org.hibernate.SessionFactory;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Repository;
++import org.springframework.transaction.annotation.Propagation;
++import org.springframework.transaction.annotation.Transactional;
+ import ru.study.dao.UserDAO;
+ import ru.study.model.User;
+ 
+@@ -29,7 +31,7 @@
+ 
+     @Override
+     public void addUser(User user) {
+-        currentSession().persist(user);
++        currentSession().save(user);
+     }
+ 
+     @Override
+@@ -50,13 +52,29 @@
+ 
+     @Override
+     public void removeUserById(Long id) {
+-        Query query = currentSession().createQuery("delete from User where id =:id");
+-        query.setParameter("id", id).executeUpdate();
++        Query query = currentSession().createQuery("delete from User where id = :ID");
++        query.setParameter("ID", id);
++        query.executeUpdate();
++
+     }
+ 
+     @Override
+     public void updateUser(User user) {
+-        currentSession().merge(user);
++        String hql = "UPDATE User" +
++                " set email =: email, " +
++                "  login =: login, " +
++                "  password =: password, " +
++                "  rating =: rating, " +
++                "  role =: role " +
++                "WHERE id =:id";
++        Query query = currentSession().createQuery(hql);
++        query.setParameter("email", user.getEmail());
++        query.setParameter("login", user.getLogin());
++        query.setParameter("password", user.getPassword());
++        query.setParameter("rating", user.getRating());
++        query.setParameter("role", user.getRole());
++        query.setParameter("id", user.getId());
++        query.executeUpdate();
+ 
+     }
+ 
+Index: src/main/web/WEB-INF/pages/admin.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/web/WEB-INF/pages/admin.jsp	(revision de83ebb38eadeeff227ab44b4c02294ac38c518c)
++++ src/main/web/WEB-INF/pages/admin.jsp	(date 1567068374399)
+@@ -29,7 +29,7 @@
+             <td>${user.role}</td>
+             <td>${user.rating}</td>
+             <td>
+-                <a href="/edit?id=<c:out value='${user.id}'/>">Edit</a>
++                <a href="/admin/edit?id=<c:out value='${user.id}'/>">Edit</a>
+                 &nbsp;&nbsp;&nbsp;&nbsp;
+                 <a href="/admin/delete?id=<c:out value='${user.id}'/>">Delete</a>
+             </td>
+Index: src/main/web/WEB-INF/pages/edit.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/web/WEB-INF/pages/edit.jsp	(revision de83ebb38eadeeff227ab44b4c02294ac38c518c)
++++ src/main/web/WEB-INF/pages/edit.jsp	(date 1567068617352)
+@@ -56,5 +56,8 @@
+     </table>
+ </form>
+ 
++
++
++
+ </body>
+ </html>
+Index: src/main/java/ru/study/controller/TController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/ru/study/controller/TController.java	(revision de83ebb38eadeeff227ab44b4c02294ac38c518c)
++++ src/main/java/ru/study/controller/TController.java	(date 1567073889629)
+@@ -3,7 +3,11 @@
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Controller;
+ import org.springframework.ui.Model;
++import org.springframework.web.bind.annotation.ModelAttribute;
+ import org.springframework.web.bind.annotation.RequestMapping;
++import org.springframework.web.bind.annotation.RequestMethod;
++import org.springframework.web.bind.annotation.RequestParam;
++import org.springframework.web.servlet.ModelAndView;
+ import ru.study.model.User;
+ import ru.study.service.UserService;
+ 
+@@ -14,18 +18,55 @@
+ 
+     @Autowired
+     private UserService userService;
++
+     @RequestMapping("/")
+     public String viewer() {
+-        System.out.println("index");
+         return "index";
+     }
+ 
+-    @RequestMapping("/a")
++    @RequestMapping("/admin")
+     public String viewer2(Model model) {
+-        System.out.println("admin");
+-         List<User> allUsers = userService.getAllUsers();
+-         allUsers.stream().forEach(user -> System.out.println(user.toString()));
++        List<User> allUsers = userService.getAllUsers();
+         model.addAttribute("users", allUsers);
+         return "admin";
+     }
++
++    @RequestMapping("/admin/delete")
++    public String delete(@RequestParam(name = "id", required = false) Long id) {
++        userService.deleteById(id);
++        return "admin";
++    }
++
++    @RequestMapping("/admin/edit")
++    public String editButton(@RequestParam(name = "id", required = false) Long id, Model model) {
++        System.out.println(id);
++        model.addAttribute("user", userService.getUserById(id));
++        return "edit";
++    }
++
++    @RequestMapping(value = "/reg", method = RequestMethod.POST)
++    public String reg(@ModelAttribute("user") User user)  {
++        userService.addUser(user);
++        return "redirect:/admin";
++    }
++
++    @RequestMapping(value = "/reg", method = RequestMethod.GET)
++    public ModelAndView register() {
++        return new ModelAndView("register", "user", new User());
++    }
++
++
++
++    @RequestMapping(value = "/edit", method = RequestMethod.POST)
++    public String edit(@RequestParam(value = "id") long id,
++                       @RequestParam String login,
++                       @RequestParam String email,
++                       @RequestParam String password,
++                       @RequestParam(value = "rating") long rating,
++                       @RequestParam String role
++    ) {
++        userService.updateUser(new User(id, login, email, password, role, rating));
++        return "admin";
++    }
++
+ }
+Index: src/main/java/ru/study/model/User.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/ru/study/model/User.java	(revision de83ebb38eadeeff227ab44b4c02294ac38c518c)
++++ src/main/java/ru/study/model/User.java	(date 1567059558282)
+@@ -6,7 +6,7 @@
+ import javax.persistence.*;
+ 
+ @Entity(name = "User")
+-@Table(name = "users",schema = "web6_db")
++@Table(name = "users", schema = "web6_db")
+ @Data
+ public class User {
+     @Id
+@@ -19,7 +19,7 @@
+     private String email;
+     @Column(name = "password")
+     private String password;
+-    @Column(name = "role" )
++    @Column(name = "role")
+     @ColumnDefault("user")
+     private String role;
+     @Column(name = "rating")
+Index: src/main/web/WEB-INF/pages/register.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/web/WEB-INF/pages/register.jsp	(revision de83ebb38eadeeff227ab44b4c02294ac38c518c)
++++ src/main/web/WEB-INF/pages/register.jsp	(date 1567070304796)
+@@ -12,14 +12,14 @@
+     <form:label path="login">Login:</form:label>
+     <form:input path="login"/>
+ 
++    <form:label path="email">email:</form:label>
++    <form:input path="email"/>
++
+     <form:label path="password">Password:</form:label>
+     <form:password path="password"/>
+ 
+-    <form:label path="email">Password:</form:label>
+-    <form:input path="email"/>
+ 
+     <input type="submit" class="btnLogin" value="Save" tabindex="4">
+-
+     <a href="/admin" class=""> list </a>
+     <a href="/index" class=""> login</a>
+ </form:form>
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/vcs.xml	(date 1567059146024)
++++ .idea/vcs.xml	(date 1567059146024)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: src/main/java/ru/study/conf/AppConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/ru/study/conf/AppConfig.java	(revision de83ebb38eadeeff227ab44b4c02294ac38c518c)
++++ src/main/java/ru/study/conf/AppConfig.java	(date 1567059400048)
+@@ -10,7 +10,7 @@
+ import org.springframework.web.servlet.view.UrlBasedViewResolver;
+ 
+ @Configuration
+-@ComponentScan(basePackages = "ru.study")
++@ComponentScan( "ru.study")
+ @Import(HiberConfig.class)
+ public class AppConfig {
+     @Bean
