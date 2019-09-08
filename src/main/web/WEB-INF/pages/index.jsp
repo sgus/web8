@@ -11,6 +11,10 @@
     <title>Title</title>
 </head>
 <body>
+<a href="/logout" class=""> logout </a>
+<br>
+<br>
+<br>
 asdfsd
 </body>
 </html>

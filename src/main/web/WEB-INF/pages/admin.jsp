@@ -6,7 +6,9 @@
 </head>
 <body>
 <div style="color: teal; font-size: 20px">List of user</div>
-
+<a href="/logout" class=""> logout </a>
+<br>
+<br>
 <a href="/reg">New User</a>
 
 <table border="1" cellpadding="5">
@@ -25,7 +27,14 @@
             <td>${user.login}</td>
             <td>${user.email}</td>
             <td>${user.password}</td>
-            <td>${user.role.name}</td>
+            <td>
+
+        <c:forEach var="role" items="${user.roles}">
+            ${role.name}
+            <br>
+        </c:forEach>
+
+            </td>
             <td>${user.rating}</td>
             <td>
                 <a href="/admin/edit?id=<c:out value='${user.id}'/>">Edit</a>

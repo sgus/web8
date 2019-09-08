@@ -4,10 +4,13 @@ package ru.study.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.study.dao.RoleDAO;
 import ru.study.dao.UserDAO;
+import ru.study.model.Role;
 import ru.study.model.User;
 import ru.study.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,10 +18,15 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserDAO dao;
+
     @Autowired
     public UserServiceImpl(UserDAO dao) {
+
         this.dao = dao;
     }
+
+    @Autowired
+    private RoleDAO roleDAO;
 
     @Override
     public User getUserById(long id) {
@@ -37,6 +45,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addUser(User user) {
+
+            List<Role> roles = new ArrayList<Role>();
+            user.getRoles().forEach(role -> roles.add(roleDAO.getRoleByName(role.getName())));
+            user.setRoles(roles);
+        user.getRoles().forEach(role -> System.out.println(role.getId()+" "+role.getName()));
+
         dao.addUser(user);
     }
 
@@ -47,7 +61,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUser(User user) {
-        dao.updateUser(user);
+        User userById = dao.getUserById(user.getId());
+        if (!userById.getRoles().equals(user.getRoles())) {
+            List<Role> roles = new ArrayList<Role>();
+            user.getRoles().stream().forEach(role -> roles.add(roleDAO.getRoleByName(role.getName())));
+            userById.setRoles(roles);
+        }
+        userById.setLogin(user.getLogin());
+        userById.setPassword(user.getPassword());
+        userById.setRating(user.getRating());
+        dao.updateUser(userById);
     }
 
     @Override

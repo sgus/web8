@@ -7,58 +7,49 @@
     <title>edit</title>
 </head>
 <body>
-<form:form method="post" action="/edit" modelAttribute="user" >
+<div style="color: teal; font-size: 20px">Edit user</div>
+<a href="/logout" class=""> logout </a>
 
-    <div style="color: teal; font-size: 20px">Edit user</div>
-    <a href="/reg">New User</a>
+<a href="/reg">New User</a>
+
+<br>
+<form:form method="post" action="/edit" modelAttribute="user">
+
+    <br>
     <table>
-        <tr>
-            <td>ID :</td>
-            <td>${user.id}
-                <input type="hidden" name="id" value="<c:out value="${user.id}"/>"/>
-            </td>
-        </tr>
-        <tr>
-            <td>Login :</td>
-            <td><input type="text" name="login" value="<c:out value="${user.login}"/>"/>
-            </td>
-        </tr>
 
         <tr>
-            <td>Password :</td>
-            <td><input type="password" name="password" value="<c:out value="${user.password}"/>"/>
+            <td>id <c:out value="${user.id}"/></td>
+            <td><input type="hidden" name="id" value="<c:out value="${user.id}"/>"></td>
+        </tr>
+        <tr>
+            <td>login</td>
+            <td><input type="text" name="login" value="<c:out value="${user.login}"/>"></td>
+        </tr>
+        <tr>
+            <td>email</td>
+            <td><input type="email" name="email" value="<c:out value="${user.email}"/>"></td>
+        </tr>
+        <tr>
+            <td>password</td>
+            <td><input type="password" name="password" value="<c:out value="${user.password}"/>"></td>
+        </tr>
 
-            </td>
-        </tr>
-        <tr>
-            <td>Email :</td>
-            <td><input type="email" name="email" value="<c:out value="${user.email}"/>"/>
+        <c:forEach var="role" items="${roles}">
+            <form:checkbox path="roles" value="${role.name}"/>${role.name}
+            <br>
+        </c:forEach>
 
-            </td>
-        </tr>
         <tr>
-            <td>Role :</td>
-            <td><input type="text" name="role" value="<c:out value="${user.role.name}"/>"/>
-            </td>
+            <td>rating</td>
+            <td><input type="number" name="rating" value="<c:out value="${user.rating}"/>"></td>
         </tr>
-        <tr>
-            <td>Rating :</td>
-            <td><input type="number" name="rating" value="<c:out value="${user.rating}"/>"/>
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
 
-                <input type="submit" value="Save">
-                &nbsp;&nbsp;&nbsp;&nbsp;
-                <a href="/admin" type="submit">cancel</a>
-            </td>
-        </tr>
     </table>
+
+    <input type="submit" class="btnLogin" value="Save" tabindex="4">
+    <a href="/admin" class=""> cancel </a>
 </form:form>
-
-
 
 
 </body>

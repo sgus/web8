@@ -4,6 +4,8 @@ import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "User")
 @Table(name = "users", schema = "web6_db")
@@ -19,9 +21,20 @@ public class User {
     private String email;
     @Column(name = "password")
     private String password;
-    @ManyToOne
-    @JoinColumn(name="role_id")
-    private Role role;
+
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "clientCourse",
+            joinColumns = {
+                    @JoinColumn(name = "user_id",
+                            referencedColumnName = "id")},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "role_id",
+                            referencedColumnName = "id")
+            })
+    List<Role> roles = new ArrayList<Role>();
+
+
     @Column(name = "rating")
     @ColumnDefault("0")
     private Long rating;
@@ -29,12 +42,12 @@ public class User {
     public User() {
     }
 
-    public User(long id, String login, String email, String password, Role role, Long rating) {
+    public User(long id, String login, String email, String password, List<Role> roles, Long rating) {
         this.id = id;
         this.login = login;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.roles = roles;
         this.rating = rating;
     }
 
@@ -44,11 +57,11 @@ public class User {
         this.password = password;
     }
 
-    public User(String login, String email, String password, Role role, Long rating) {
+    public User(String login, String email, String password, List<Role> roles, Long rating) {
         this.login = login;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.roles = roles;
         this.rating = rating;
     }
 
@@ -65,7 +78,7 @@ public class User {
                 ", login='" + this.login + '\'' +
                 ", email='" + this.email + '\'' +
                 ", password='" + this.password + '\'' +
-                ", role='" + this.role.getName() + '\'' +
+                ", role='" + this.roles.toString() + '\'' +
                 ", rating=" + this.rating +
                 '}';
     }
